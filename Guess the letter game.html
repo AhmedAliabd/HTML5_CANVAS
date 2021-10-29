@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guess the letter game</title>
+  </head>
+  <body style="background: rgb(38, 70, 250);">
+    <dev style="position: absolute; top: 30%; left: 35%">
+      <canvas id="image" width="500" height="300"></canvas>
+      <form>
+        <input type="button" id="createImageData" value="Take a screenshot" />
+        <input type="button" id="playAgain" value="play Again" />
+      </form>
+    </dev>
+
+    <script>
+      window.addEventListener("load", eventWindowLoaded, false);
+
+        function eventWindowLoaded() {
+            canvasGame();
+        }
+
+        let canvasGame = () => {
+            let guess = 0;
+            let message = "Guess the letter from a (lower) to z (higher)";
+            let letters = [
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g",
+                "h",
+                "i",
+                "j",
+                "k",
+                "l",
+                "m",
+                "n",
+                "o",
+                "p",
+                "q",
+                "r",
+                "s",
+                "t",
+                "u",
+                "v",
+                "w",
+                "x",
+                "y",
+                "z",
+            ];
+            let today = new Date();
+            let letterToGuess = "";
+            let higherOrLower = "";
+            let letterGuessed;
+            let gameOver = false;
+            let canvas = document.getElementById("image");
+            let canvas_ctx = canvas.getContext("2d");
+
+            let createField = (color, font, text, x, y) => {
+                canvas_ctx.fillStyle = color;
+                canvas_ctx.font = font;
+                canvas_ctx.fillText(text, x, y);
+            };
+
+            let init = () => {
+                clearCan();
+                let screenShot = document.getElementById("createImageData");
+                let playAgain = document.getElementById("playAgain");
+                let letterIndex = Math.floor(Math.random() * letters.length);
+                letterToGuess = letters[letterIndex];
+                letterGuessed = [];
+                gameOver = false;
+                window.addEventListener("keyup", eventKeyPressed, true);
+                screenShot.addEventListener("click", createImage, false);
+                playAgain.addEventListener("click", init, false);
+                drawScreen();
+            };
+            let eventKeyPressed = (e) => {
+                if (!gameOver) {
+                    let letterPressed = String.fromCharCode(e.keyCode);
+                    letterPressed = letterPressed.toLowerCase();
+                    guess++;
+                    letterGuessed.push(letterPressed);
+                    if (letterPressed == letterToGuess) {
+                        gameOver = true;
+                    } else {
+                        let letterIndex = letters.indexOf(letterToGuess);
+                        let guessindex = letters.indexOf(letterPressed);
+                        if (guessindex < 0) {
+                            higherOrLower = "That is not a leeter";
+                        } else if (guessindex > letterIndex) {
+                            higherOrLower = "Lower";
+                        } else if (guessindex < letterIndex) {
+                            higherOrLower = "Higher";
+                        }
+                    }
+                    drawScreen();
+                }
+            };
+            let drawScreen = () => {
+                canvas_ctx.fillStyle = "#ffffaa";
+                canvas_ctx.fillRect(0, 0, 500, 300);
+                canvas_ctx.strokeStyle = "#000000";
+                canvas_ctx.strokeRect(5, 5, 490, 290);
+                canvas_ctx.textBaseline = "top";
+
+                createField("#000000", "10px _sans", today, 150, 10);
+
+                createField("black", "14px _sans", message, 125, 30);
+
+                createField("#109910", "16px _sans", `Guesses: ${guess}`, 215, 50);
+
+                createField(
+                    "#000000",
+                    "16px _sans",
+                    `Higher or Lower: ${higherOrLower}`,
+                    150,
+                    125
+                );
+
+                createField("#FF0000", "14px _sans", message, 125, 30);
+
+                createField(
+                    "#FF0000",
+                    "12px _sans",
+                    `letters guessed: ${letterGuessed.toString()}`,
+                    10,
+                    260
+                );
+
+                if (gameOver) {
+                    canvas_ctx.fillStyle = "#FF0000";
+                    canvas_ctx.font = "40px _sans";
+                    canvas_ctx.fillText("You got it", 150, 180);
+                }
+            };
+
+            let createImage = (e) => {
+                let imageSrc = canvas.toDataURL("image/png");
+                window
+                    .open("", "screenShot", "width=500,height=300")
+                    .document.write(`<img src=${imageSrc}>`);
+            };
+
+            let clearCan = () => {
+                guess = 0;
+                today = new Date();
+                letterToGuess = "";
+                higherOrLower = "";
+                gameOver = false;
+            };
+
+            init();
+      };
+    </script>
+  </body>
+</html>
