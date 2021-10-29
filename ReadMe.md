@@ -1,0 +1,1 @@
+This repo just to practice the exercises from HTML5_CANVAS book by Steve Fulton & Jeff Fulton
